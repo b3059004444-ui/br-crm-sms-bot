@@ -8,24 +8,17 @@ on:
 jobs:
   run-sms-bot:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: Install dependencies
-        run: pip install requests
-
+      - run: pip install requests
       - name: Run SMS Bot
         env:
-          RC_CLIENT_ID:     ${{ secrets.RC_CLIENT_ID }}
+          RC_CLIENT_ID: ${{ secrets.RC_CLIENT_ID }}
           RC_CLIENT_SECRET: ${{ secrets.RC_CLIENT_SECRET }}
-          RC_JWT:           ${{ secrets.RC_JWT }}
-          RC_PHONE:         ${{ secrets.RC_PHONE }}
+          RC_JWT: ${{ secrets.RC_JWT }}
+          RC_PHONE: ${{ secrets.RC_PHONE }}
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
         run: python sms_bot.py
