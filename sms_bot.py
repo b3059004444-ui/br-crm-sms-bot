@@ -13,6 +13,7 @@ FEATURES:
 """
 
 import os
+import re
 import json
 import requests
 from datetime import datetime, timezone
@@ -42,6 +43,18 @@ AIRTABLE_HEADERS = {
 }
 
 PROCESSED_SIDS_FILE = "processed_sids.json"
+
+
+# ── Phone number normalizer ──────────────────────────────────
+
+def normalize_phone(phone):
+    """Convert any phone format to E.164 (+1XXXXXXXXXX)."""
+    digits = re.sub(r"\D", "", phone)  # strip everything except digits
+    if len(digits) == 10:
+        digits = "1" + digits          # add US country code
+    if not digits.startswith("+"):
+        digits = "+" + digits
+    return digits
 
 
 # ── RingCentral Auth ─────────────────────────────────────────
@@ -196,7 +209,7 @@ def main():
                 if phone:
                     body = SMS_MESSAGE.replace("{name}", name)
                     try:
-                        msg_id = send_rc_sms(token, phone, body)
+                        msg_id = send_rc_sms(token, normalize_phone(phone), body)
                         log_activity(lead["id"], "Outbound", f"Sent: {body}\n[RC ID: {msg_id}]")
                         mark_sms_sent(lead["id"])
                         print(f"  ✅  Sent to {name} ({phone})")
@@ -222,7 +235,7 @@ def main():
                 reply  = fields.get("SMS Reply", "").strip()
                 if phone and reply:
                     try:
-                        msg_id = send_rc_sms(token, phone, reply)
+                        msg_id = send_rc_sms(token, normalize_phone(phone), reply)
                         log_activity(lead["id"], "Outbound", f"Reply sent: {reply}\n[RC ID: {msg_id}]")
                         clear_reply_fields(lead["id"])
                         print(f"  ✅  Reply sent to {name} ({phone}): {reply}")
