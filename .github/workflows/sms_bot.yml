@@ -1,30 +1,8 @@
-name: BR CRM SMS Bot
-
-on:
-  schedule:
-    - cron: "*/5 * * * *"
-  workflow_dispatch:
-
-jobs:
-  run-sms-bot:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: pip install twilio requests
-
-      - name: Run SMS Bot
+- name: Run SMS Bot
         env:
-          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
-          TWILIO_AUTH_TOKEN:  ${{ secrets.TWILIO_AUTH_TOKEN }}
-          TWILIO_PHONE:       ${{ secrets.TWILIO_PHONE }}
-          AIRTABLE_API_KEY:   ${{ secrets.AIRTABLE_API_KEY }}
+          RC_CLIENT_ID:     ${{ secrets.RC_CLIENT_ID }}
+          RC_CLIENT_SECRET: ${{ secrets.RC_CLIENT_SECRET }}
+          RC_JWT:           ${{ secrets.RC_JWT }}
+          RC_PHONE:         ${{ secrets.RC_PHONE }}
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
         run: python sms_bot.py
